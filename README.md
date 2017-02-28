@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Clarifai's JavaScript  Demo 
 
 live at [hannanali.tech/clarifai-javascript-demo](https://hannanali.tech/clarifai-javascript-demo)
@@ -101,3 +102,6 @@ Fellow Clarifai Champions and awesome supportive team of Clarifai
 
 ### LICENSE
 MIT License. See [LICENSE](LICENSE) for more details.
+=======
+# SpoonSnapBackEnd
+>>>>>>> 28e3334288964507f333975a48ccc3653d5800a8
