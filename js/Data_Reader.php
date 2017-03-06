@@ -23,13 +23,14 @@ while(($line=fgetcsv($file))!='')
   	$dataset[]=$splitted;
   }
   //echo sizeof($dataset);
-
+print_r ( sizeof($dataset));
   #echo json_encode($dataset);
-  $fp = fopen('./assets/dataset.json', 'w');
-fwrite($fp, json_encode($dataset));
-fclose($fp);
+
 $fp = fopen('./assets/attributes.json', 'w');
 fwrite($fp, json_encode($attributes));
+fclose($fp);
+$fp = fopen('./assets/dataset.json', 'wb');
+fwrite($fp, json_encode($dataset));
 fclose($fp);
 
 

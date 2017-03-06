@@ -1,3 +1,32 @@
+index.js
+DETAILS
+ACTIVITY
+index.js
+Sharing Info
+
+General Info
+Type
+Javascript
+Size
+6 KB (6,047 bytes)
+Storage used
+6 KB (6,047 bytes)
+Location
+ClarifaiDemo
+Owner
+me
+Modified
+26 Feb 2017 by me
+Opened
+12:36 by me
+Created
+26 Feb 2017 with Google Drive Web
+Description
+Add a description
+Download permissions
+Viewers can download
+
+
 /*
  * index.js
  * Clarifai Basic Application demo code
@@ -21,7 +50,6 @@ var ClarifaiClient = new Clarifai.App(
 	})
 
 	// Finding a bunch of elements in the DOM
-	
 	var app = $(".app")
 	var imageInput = $("#imageUrl");
 	var submitButton = $("#submitBtn");
@@ -29,7 +57,7 @@ var ClarifaiClient = new Clarifai.App(
 	var tagsContainer = $(".tags-container");
 	var tags = $(".tags")
 	var inputbtn=$("#inputBtn")
-	var searcher=$("#searcher")	
+	//var searcher=$("#tksearcher")	
 
 
 	inputbtn.on("click", function (event) {
@@ -45,14 +73,14 @@ var ClarifaiClient = new Clarifai.App(
 				ClarifaiClient.inputs.create([{
  base64: images[0],
   "concepts": [
-    { "id": "cat", "value": false },
-    { "id": "dog", "value": true }
+    { "id": "TestC1", "value": false },
+    { "id": "TestC2", "value": true }
   ]
 }, {
   base64: images[1],
   "concepts": [
-    { "id": "cat", "value": false },
-    { "id": "dog", "value": true }
+    { "id": "TestC3", "value": false },
+    { "id": "TestC1", "value": true }
   ]
 }]).then(
   createModel,
@@ -75,11 +103,19 @@ function errorHandler(err) {
 
 
 	
-	searcher.on("click",function (event){
-		var query=$("#concept_query")
-		alert(query.value);
-
-	});
+	function Concept_Searcher (event){
+		//console.log("Why ")
+		var query=$("#concept_query").value
+		ClarifaiClient.inputs.search({concept: {name:"East Indian"}}).then(
+		{
+			function (response)
+			{
+				console.log("Image Url:")
+				console.log(response.hits[0].input.data.image.url)
+			}
+		});
+	}
+	document.getElementById("tksearcher").addEventListener("click",Concept_Searcher);
 	submitButton.on("click", function (event) {
 		// getting the input from the image
 		var url = imageInput.val()
@@ -98,10 +134,10 @@ function errorHandler(err) {
 		);
 		});*/
 		
-		ClarifaiClient.models.predict("test_foodie", "https://i.ytimg.com/vi/iIVJN0Yz1Y0/maxresdefault.jpg").then(
+		ClarifaiClient.models.predict("test_foodie", "http://images.indianexpress.com/2016/03/samosa-main.jpg").then(
 			function(response) {
 	  	  console.log("samosa2");
-    		console.log(response.outputs[0].data.concepts[1]);
+    		console.log(response.outputs[0].data);
 	
   },
   function(err) {
