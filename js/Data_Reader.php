@@ -1,5 +1,5 @@
 <?php
-$file = fopen("./assets/Master Data Sheet.csv","r");
+$file = fopen("./data/Tempsheet.csv","r");
 $dataset=[];
 $attributes=fgetcsv($file);
 $i=0;
@@ -26,10 +26,10 @@ while(($line=fgetcsv($file))!='')
 print_r ( sizeof($dataset));
   #echo json_encode($dataset);
 
-$fp = fopen('./assets/attributes.json', 'w');
+$fp = fopen('./data/attributes.json', 'w');
 fwrite($fp, json_encode($attributes));
 fclose($fp);
-$fp = fopen('./assets/dataset.json', 'wb');
+$fp = fopen('./data/dataset.json', 'wb'); #dataset.json now contains the Tempsheet with true and false values for concepts.
 fwrite($fp, json_encode($dataset));
 fclose($fp);
 

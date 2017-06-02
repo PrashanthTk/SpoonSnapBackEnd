@@ -1,4 +1,4 @@
-index.js
+/*index.js
 DETAILS
 ACTIVITY
 index.js
@@ -25,7 +25,7 @@ Description
 Add a description
 Download permissions
 Viewers can download
-
+*/
 
 /*
  * index.js
@@ -34,11 +34,31 @@ Viewers can download
  * complete this demo available at 
  * https://github.com/Clarifai/clarifai-javascript
  */
+/*
+		[
+			{
+				id,name,
+				imgarray,
+				concepts
+			}
+		]			
 
+				*/
 var keys = getKeys();
-var clientId = "onQhsd8qT-OqZyFUSYTgJL2UcsnjwhwFsPy8mmpO"
-var clientSecret = "_gLYFaq7SfkrewCPfIodFRjN0Up6cHvyEPKjCDiM"
 
+//test_foodie keys
+//var clientId = "onQhsd8qT-OqZyFUSYTgJL2UcsnjwhwFsPy8mmpO"
+//var clientSecret = "_gLYFaq7SfkrewCPfIodFRjN0Up6cHvyEPKjCDiM"
+
+//My First Application keys
+//var clientId = "m3vjN-qeA9JvGDYEoabAqQtwNTnEPqo6Qh1cThg5"
+//var clientSecret = "oMP6V_afSoyZCIc4a3hkGNVDrNxznS-CsIcG5-EO"
+
+//Actual SpoonSnap keys
+var clientId = "rRRKyoBzVMcEF_-9lbINqt73ISYXpWYYxp1nCE51"
+var clientSecret = "FMIBfwrvMKRheknlFQcni9LwsT2TDnllDRIxW7cs"
+var attributes=''		//Attributes of the dataset. Contains cuisine names for concepts
+var model_input_list=[];		// array of model_input elements which is the Clarifai input parameter
 var ClarifaiClient = new Clarifai.App(
   clientId,
   clientSecret
@@ -57,52 +77,159 @@ var ClarifaiClient = new Clarifai.App(
 	var tagsContainer = $(".tags-container");
 	var tags = $(".tags")
 	var inputbtn=$("#inputBtn")
+	var trainBtn=$("#trainBtn")
 	//var searcher=$("#tksearcher")	
+function data_processor(element)
+{
+	//console.log(element.name);
+	//Each element is a dish here
+	var concept_list=[];
+	//prepare concepts array
+	var i=0;
+	for(var name in attributes)
+	{
+		//console.log(attributes[name]);
+		if(attributes[name]!="ID" && attributes[name]!="Dish Name")
+		{
+			//console.log(i);
+			var concept=
+			{
+				id:attributes[name],
+				value:(element.concepts[i++]=="true"?true:false)
+			}
+			concept_list.push(concept);
+		}
+	}
+	//console.log(concepts);
+	//--------------
+	//Difference between concept_list,elements.concepts is--> concept_list is an array of concept objects.
+	// While element.concepts is an array of true,false values with numbers for keys
+	var len=element.imgarray.length;
+	for (var k=0;k<len;k++)
+	{
+		var model_input=
+		{
+			base64:element.imgarray[k],
+			concepts:concept_list,
+		};
+		model_input_list.push(model_input);
+	}
 
 
-	inputbtn.on("click", function (event) {
+}
+
+
+	function ImageUploader(event) {
 		//console.log("After click")
-		$.ajax({
+/*		$.ajax({
 			url:"./js/imguploader.php",
 
 			dataType:"JSON",
-			success: function(images)
-			{
-				//var images = $.parseJSON(imgarray)
-				//console.log(images[0]);
-				ClarifaiClient.inputs.create([{
- base64: images[0],
-  "concepts": [
-    { "id": "TestC1", "value": false },
-    { "id": "TestC2", "value": true }
-  ]
-}, {
-  base64: images[1],
-  "concepts": [
-    { "id": "TestC3", "value": false },
-    { "id": "TestC1", "value": true }
-  ]
-}]).then(
-  createModel,
-  errorHandler
-);
-function createModel()
-{
-	console.log("Finished adding inputs apparently and I'm inside createModel")
-}
-function errorHandler(err) {
-  console.error(err);
-}
-}
+			success: function(data)
+{*/
+// Edit the dimensions of this loop for reading json files only upto a certain name
+console.log("Entered ImageUploader")
 
-	});
+for (var a=51;a<53;a++)				
+{
+				$.ajax({
+					url:"./js/data/Food_JSON_ASP/"+a+".json",
+					dataType:'json',
+					
+					success: function(folderjson)
+							{
+										data_processor(folderjson);
+										
+										console.log("Dish number is \n"+folderjson.name );
+										//console.log(model_input_list)
+										
+										ClarifaiClient.inputs.create(model_input_list).then(
+									  trainModel,
+									  errorHandler
+									);
+									function trainModel()
+								{
+										console.log("Finished adding inputs apparently and I'm inside createModel")
+										ClarifaiClient.models.train("SpoonSnap").then(
+									    function(response) {
+									      console.log("Training right now")
+									      console.log(response)
+									    },
+									    function(err) {
+									      console.log("Training error:"+err)
+									    }
+									  );
+											console.log("trainModel function Javascript thread is over")
+								}
+								function errorHandler(err) {
+								  console.error(err);
+								}
+								model_input_list=[]
+							}
+
+								
+						});
+				}
+				
+
+				//1. read attributes vector
+				//2. turn data into json format. 
+				//3. Scroll above for json structure
+				
+					/*ClarifaiClient.inputs.create([{
+			 url: "https://s-media-cache-ak0.pinimg.com/736x/52/74/0f/52740f7a75720a4576d1bd0613e3a3a1.jpg",
+			  "concepts": [
+			    { "id": "Test5", "value": false },
+			    { "id": "Test7", "value": true }
+			  ]
+			}, {
+			  url: "http://vignette4.wikia.nocookie.net/naruto/images/9/9d/Itachi_full.png/revision/latest/scale-to-width-down/175?cb=20160623120232",
+			  "concepts": [
+			    { "id": "Test5", "value": true },
+			  
+			  ]
+			}]).then(
+									  trainModel,
+									  errorHandler
+									);
+									function trainModel()
+								{
+										console.log("Finished adding inputs apparently and I'm inside createModel")
+										ClarifaiClient.models.train("TestModel").then(
+									    function(response) {
+									      console.log("Training right now")
+									      console.log(response)
+									    },
+									    function(err) {
+									      console.log("Training error:"+err)
+									    }
+									  );
+											console.log("trainModel function Javascript thread is over")
+								}
+								function errorHandler(err) {
+								  console.error(err);
+								}*/
+
+	//});
+console.log("Done with the ImageUploader function ?")
 
 			
 
-		});
+		}
+	/*function trainModel()
+	{
+				console.log("Entered trainModel")
+				ClarifaiClient.models.train("SpoonSnap").then(
+		    function(response) {
+		      console.log("Training right now")
+		    },
+		    function(err) {
+		      console.log("Training error:"+err)
+		    }
+		  );
+				console.log("trainModel function Javascript thread is over")
+	}*/
 
-
-	
 	function Concept_Searcher (event){
 		//console.log("Why ")
 		var query=$("#concept_query").value
@@ -115,7 +242,10 @@ function errorHandler(err) {
 			}
 		});
 	}
-	document.getElementById("tksearcher").addEventListener("click",Concept_Searcher);
+	inputbtn.on("click", ImageUploader);
+	
+	//document.getElementById("tksearcher").addEventListener("click",Concept_Searcher);
+	console.log("Vada")
 	submitButton.on("click", function (event) {
 		// getting the input from the image
 		var url = imageInput.val()
@@ -134,10 +264,10 @@ function errorHandler(err) {
 		);
 		});*/
 		
-		ClarifaiClient.models.predict("test_foodie", "http://images.indianexpress.com/2016/03/samosa-main.jpg").then(
+		ClarifaiClient.models.predict("SpoonSnap", "http://www.vegrecipesofindia.com/wp-content/uploads/2011/10/medu-vada.jpg").then(
 			function(response) {
-	  	  console.log("samosa2");
-    		console.log(response.outputs[0].data);
+	  	  console.log("Vada");
+    		console.log(response.outputs[0].data.concepts);
 	
   },
   function(err) {
@@ -257,6 +387,10 @@ function errorHandler(err) {
 			console.log(clientId+"sdasd"+clientSecret);
 			app.html("Enter your Clarifai's Client ID and Client Secret in order to successfully run this demo. Go to developer.clarifai.com, sign up and create your application if you haven't already. You'll have to edit keys.js file to enter your credentials")
 		}
+		$.getJSON( "./js/data/attributes.json", function( data ) {
+				attributes=data;
+				});
+	}
 		/*
 		else {
 			 ClarifaiClient = new Clarifai.App(
@@ -266,5 +400,5 @@ function errorHandler(err) {
 		}*/
 
 
-	}
+	
 }(jQuery, Clarifai));
